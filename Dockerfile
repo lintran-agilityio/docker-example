@@ -1,3 +1,4 @@
+# Statge 1: build
 FROM base:latest
 WORKDIR /usr/src
 EXPOSE 3000
@@ -12,7 +13,12 @@ USER node
 COPY . .
 CMD npm run dev
 
-FROM base as prod
+# Stage 2: test
+FROM build AS test
+RUN npm test
+
+# Stage 2: prod
+FROM node:20-alpine AS prod
 # run ts-node-dev to reload
 # RUN npm install -g ts-node-dev typescript
 RUN --mount=type=bind,source=package.json,target=package.json \
