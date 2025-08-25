@@ -1,5 +1,5 @@
 # Stage 1: build
-FROM node:18 AS build
+FROM node:20-alpine AS build
 WORKDIR /usr/src
 COPY package*.json ./
 RUN npm ci --include=dev
