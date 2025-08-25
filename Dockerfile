@@ -74,4 +74,4 @@ RUN npm install --only=production
 COPY --from=build /app/dist ./dist
 
 # Run app
-CMD ["node", "dist/index.js"]
+CMD ["node", "src/index.js"]
