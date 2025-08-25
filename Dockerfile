@@ -53,7 +53,7 @@ FROM build AS test
 CMD [ "npm", "test" ]
 
 # Stage 3: Runtime
-FROM node:18
+FROM node:18 AS prod
 WORKDIR /app
 
 # Copy package.json và package-lock.json để install lại dependencies production
