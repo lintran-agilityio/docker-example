@@ -46,15 +46,7 @@ WORKDIR /app
 
 # Copy package.json và package-lock.json
 COPY package*.json ./
-
-# Cài tất cả dependencies (bao gồm devDependencies để có typescript, tsc)
 RUN npm install
-
-# Copy toàn bộ source code
-COPY . .
-
-# Build project (sẽ chạy "tsc" từ script build)
-RUN npm run build
 
 # Stage 2: Test
 FROM build AS test
