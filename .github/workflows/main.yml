@@ -31,3 +31,4 @@ jobs:
           push: true
           target: prod
           tags: ${{ vars.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+        
