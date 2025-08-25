@@ -56,8 +56,11 @@ COPY . .
 # Build project (sẽ chạy "tsc" từ script build)
 RUN npm run build
 
+# Stage 2: Test
+FROM build AS test
+CMD [ "npm", "test" ]
 
-# Stage 2: Runtime
+# Stage 3: Runtime
 FROM node:18
 WORKDIR /app
 
