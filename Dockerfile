@@ -41,16 +41,16 @@
 
 
 # Stage 1: Build
-# FROM node:18 AS build
-# WORKDIR /app
+FROM node:18 AS build
+WORKDIR /app
 
-# # Copy package.json và package-lock.json
-# COPY package*.json ./
-# RUN npm install
+# Copy package.json và package-lock.json
+COPY package*.json ./
+RUN npm install
 
-# # Stage 2: Test
-# FROM build AS test
-# CMD [ "npm", "test" ]
+# Stage 2: Test
+FROM build AS test
+CMD [ "npm", "test" ]
 
 # Stage 3: Runtime
 FROM node:18 AS prod
