@@ -1,0 +1,84 @@
+name: Workflow Examples
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # run manual
+  schedule:
+    - cron: "0 0 * * 0" # run on sunday 0h UTC
+
+jobs:
+
+  # --------- Build Job ---------
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/checkout@v4
+        with:
+          go-version: "1.21.x"
+
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Build
+        run: go build -v ./...
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: ./your-binary-or-output-folder
+
+  # -------- Test Job (matrix build) ---------
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        go-version: [ "1.19", "1.20", "1.21.x" ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Run tests
+        run: go test -json ./... > TestResult-${{ matrix.go-version }}.json
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults-${{ matrix.go-version }}
+          path: TestResult-${{ matrix.go-version }}.json
+
+  # --------- Deploy Job (run when push main) -----------
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [ test ]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Use secret key
+        run: echo "Deploying with secret $MY_SECRET"
+        env:
+          MY_SECRET: ${{ secrets.MY_SECRET }}
